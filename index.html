@@ -3,281 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DARCIO VEICULOS | Gerenciador & Catálogo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Dárcio Veículos - Catálogo e Estoque</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
+<body>
 
-    <nav class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-car-side text-indigo-500 text-2xl"></i>
-                    <span class="text-xl font-bold tracking-wider text-white">DARCIO<span class="text-indigo-500">VEICULOS</span></span>
-                </div>
-                <div class="flex space-x-4">
-                    <button id="btn-catalogo" onclick="alternarTela('catalogo')" class="px-4 py-2 rounded-md text-sm font-medium bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 transition-all">
-                        <i class="fa-solid fa-store mr-2"></i>Catálogo
-                    </button>
-                    <button id="btn-admin" onclick="alternarTela('admin')" class="px-4 py-2 rounded-md text-sm font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all">
-                        <i class="fa-solid fa-gauge mr-2"></i>Painel Admin
-                    </button>
-                </div>
+    <!-- ================= SEÇÃO 1: CATÁLOGO PÚBLICO (CLIENTE) ================= -->
+    <div id="catalog-container" class="view-container">
+        <header class="catalog-header">
+            <div class="brand-logo">
+                <div class="car-silhouette"></div>
+                <h2>DÁRCIO <span class="blue-text">VEÍCULOS</span></h2>
+                <p class="phone-sub"><i class="fab fa-whatsapp"></i> 75 98869-8486</p>
             </div>
+            <button id="go-to-login-btn" class="btn-restrict"><i class="fas fa-lock"></i> Área Restrita</button>
+        </header>
+
+        <div class="catalog-search-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-catalog" placeholder="Buscar por marca, modelo ou ano...">
+            </div>
+            <span class="stock-count">Estoque atual: <strong id="catalog-count">0</strong> veículos</span>
         </div>
-    </nav>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <section id="tela-catalogo" class="space-y-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
-                <div>
-                    <h1 class="text-3xl font-extrabold text-white tracking-tight">Nosso Estoque</h1>
-                    <p class="text-slate-400 mt-1">Encontre o carro dos seus sonhos disponível hoje.</p>
-                </div>
-                <div class="relative w-full md:w-80">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i>
-                    <input type="text" id="busca-catalogo" oninput="filtrarCatalogo()" placeholder="Buscar por marca, modelo..." class="w-full bg-slate-800 text-slate-100 pl-10 pr-4 py-2.5 rounded-lg border border-slate-700 focus:outline-none focus:border-indigo-500 transition-all text-sm">
-                </div>
+        <main class="catalog-grid" id="catalog-grid-list">
+            <!-- Os carros com fotos vão aparecer aqui -->
+        </main>
+    </div>
+
+
+    <!-- ================= SEÇÃO 2: TELA DE LOGIN ADM ================= -->
+    <div id="login-container" class="login-wrapper hidden">
+        <div class="login-box">
+            <div class="brand-logo">
+                <div class="car-silhouette"></div>
+                <h2>PAINEL <span class="blue-text">ADMIN</span></h2>
             </div>
-
-            <div id="grid-carros" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
-        </section>
-
-        <section id="tela-admin" class="hidden space-y-8">
-            <div class="border-b border-slate-800 pb-5">
-                <h1 class="text-3xl font-extrabold text-white tracking-tight">Painel de Controle</h1>
-                <p class="text-slate-400 mt-1">Cadastre, edite ou remova veículos do seu estoque.</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-xl sticky top-24">
-                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-plus-circle text-indigo-400"></i> Cadastrar Veículo
-                    </h3>
-                    <form id="form-veiculo" onsubmit="salvarVeiculo(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Modelo do Carro</label>
-                            <input type="text" id="modelo" required placeholder="Ex: Civic Touring 1.5" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Marca</label>
-                                <input type="text" id="marca" required placeholder="Ex: Honda" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Ano</label>
-                                <input type="number" id="ano" required placeholder="Ex: 2021" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Preço (R$)</label>
-                                <input type="number" id="preco" required placeholder="Ex: 145000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Km Rodados</label>
-                                <input type="number" id="km" required placeholder="Ex: 32000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">URL da Imagem</label>
-                            <input type="url" id="imagem" required placeholder="https://exemplo.com/foto-do-carro.jpg" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg transition-colors text-sm shadow-lg shadow-indigo-600/20 mt-2">
-                            Adicionar ao Estoque
-                        </button>
-                    </form>
-                </div>
-
-                <div class="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden">
-                    <div class="px-6 py-4 border-b border-slate-700 flex justify-between items-center">
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-boxes-stacked text-indigo-400"></i> Itens no Estoque (<span id="total-estoque">0</span>)
-                        </h3>
+            
+            <form id="login-form">
+                <div class="input-group">
+                    <label>Usuário</label>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" placeholder="Digite seu usuário" required>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                </div>
+                
+                <div class="input-group">
+                    <label>Senha</label>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Digite sua senha" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-main">Acessar Painel</button>
+                <p id="login-error" class="error-msg"></p>
+                <button type="button" id="back-to-catalog-btn" class="btn-back"><i class="fas fa-arrow-left"></i> Voltar ao Catálogo</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ================= SEÇÃO 3: PAINEL ADMINISTRATIVO INTERNO ================= -->
+    <div id="main-system" class="system-container hidden">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>DÁRCIO <span class="blue-text">VEÍCULOS</span></h3>
+                <span class="badge-admin">Admin</span>
+            </div>
+            <nav class="sidebar-menu">
+                <button class="menu-btn active" data-target="dash-section"><i class="fas fa-chart-line"></i> Dashboard</button>
+                <button class="menu-btn" data-target="add-section"><i class="fas fa-car-side"></i> Cadastrar Veículo</button>
+                <button class="menu-btn" data-target="stock-section"><i class="fas fa-list-ul"></i> Gerenciar Estoque</button>
+                <button class="menu-btn" data-target="report-section"><i class="fas fa-file-invoice-dollar"></i> Relatórios</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair do Painel</button>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <header class="main-header">
+                <h1 id="page-title">Dashboard Geral</h1>
+                <div class="user-profile">
+                    <span class="welcome-text">Olá, <strong>Administrador</strong></span>
+                    <div class="avatar"><i class="fas fa-user-shield"></i></div>
+                </div>
+            </header>
+
+            <!-- DASHBOARD VIEW -->
+            <section id="dash-section" class="tab-content">
+                <div class="metrics-grid">
+                    <div class="card-metric">
+                        <i class="fas fa-car icon-blue"></i>
+                        <div><h3 id="total-cars">0</h3><p>Carros no Estoque</p></div>
+                    </div>
+                    <div class="card-metric">
+                        <i class="fas fa-dollar-sign icon-green"></i>
+                        <div><h3 id="total-investment">R$ 0,00</h3><p>Custo do Estoque</p></div>
+                    </div>
+                    <div class="card-metric">
+                        <i class="fas fa-tags icon-orange"></i>
+                        <div><h3 id="total-sale-potential">R$ 0,00</h3><p>Potencial de Venda</p></div>
+                    </div>
+                </div>
+                <div class="recent-activity">
+                    <h2>Últimos Veículos Adicionados</h2>
+                    <div class="table-responsive">
+                        <table class="custom-table">
                             <thead>
-                                <tr class="bg-slate-900/50 text-slate-400 uppercase text-xs tracking-wider border-b border-slate-700">
-                                    <th class="px-6 py-3.5">Foto & Veículo</th>
-                                    <th class="px-6 py-3.5">Ano / Km</th>
-                                    <th class="px-6 py-3.5">Preço</th>
-                                    <th class="px-6 py-3.5 text-center">Ações</th>
-                                </tr>
+                                <tr><th>Foto</th><th>Marca/Modelo</th><th>Ano</th><th>Cor</th><th>Placa</th><th>Preço de Venda</th></tr>
                             </thead>
-                            <tbody id="tabela-admin-corpo" class="divide-y divide-slate-700/50">
-                                </tbody>
+                            <tbody id="recent-cars-table"></tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
-
-    <script>
-        // Dados de exemplo iniciais para o catálogo não iniciar vazio
-        const dadosIniciais = [
-            { id: 1, marca: "Porsche", modelo: "911 Carrera S", ano: 2022, preco: 840000, km: 12000, imagem: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=600&q=80" },
-            { id: 2, marca: "Audi", modelo: "RS e-tron GT", ano: 2023, preco: 999000, km: 4500, imagem: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80" },
-            { id: 3, marca: "BMW", modelo: "M3 Competition", ano: 2021, preco: 720000, km: 18500, imagem: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80" }
-        ];
-
-        // Inicializa o estoque pegando do LocalStorage ou usando os dados iniciais
-        let estoque = JSON.parse(localStorage.getItem('autoDrive_estoque')) || dadosIniciais;
-
-        // Formatação de Moeda Brasileira
-        const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
-        
-        // Formatação de Quilometragem
-        const formatarKm = (valor) => parseInt(valor).toLocaleString('pt-BR') + " km";
-
-        // Salva os dados atuais no LocalStorage e atualiza as telas
-        function atualizarDados() {
-            localStorage.setItem('autoDrive_estoque', JSON.stringify(estoque));
-            renderizarCatalogo(estoque);
-            renderizarTabelaAdmin();
-            document.getElementById('total-estoque').textContent = estoque.length;
-        }
-
-        // Alternar entre a visualização de Cliente (Catálogo) e Admin
-        function alternarTela(tela) {
-            const telaCat = document.getElementById('tela-catalogo');
-            const telaAdm = document.getElementById('tela-admin');
-            const btnCat = document.getElementById('btn-catalogo');
-            const btnAdm = document.getElementById('btn-admin');
-
-            if (tela === 'catalogo') {
-                telaCat.classList.remove('hidden');
-                telaAdm.classList.add('hidden');
-                btnCat.className = "px-4 py-2 rounded-md text-sm font-medium bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 transition-all";
-                btnAdm.className = "px-4 py-2 rounded-md text-sm font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all";
-            } else {
-                telaCat.classList.add('hidden');
-                telaAdm.classList.remove('hidden');
-                btnAdm.className = "px-4 py-2 rounded-md text-sm font-medium bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 transition-all";
-                btnCat.className = "px-4 py-2 rounded-md text-sm font-medium bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all";
-            }
-        }
-
-        // Renderiza os cards de carros no catálogo público
-        function renderizarCatalogo(listaCarros) {
-            const grid = document.getElementById('grid-carros');
-            grid.innerHTML = '';
-
-            if (listaCarros.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-slate-500">
-                        <i class="fa-solid fa-car-tunnel text-4xl mb-3 block"></i>
-                        Nenhum veículo encontrado no momento.
-                    </div>`;
-                return;
-            }
-
-            listaCarros.forEach(carro => {
-                const card = `
-                    <div class="bg-slate-800 border border-slate-700/60 rounded-xl overflow-hidden hover:border-slate-600 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
-                        <div class="h-48 overflow-hidden bg-slate-900 relative">
-                            <img src="${carro.imagem}" alt="${carro.modelo}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80'">
-                            <span class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-indigo-400 text-xs font-bold px-2.5 py-1 rounded-md border border-indigo-500/30">${carro.ano}</span>
-                        </div>
-                        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
-                            <div>
-                                <p class="text-xs font-bold uppercase tracking-widest text-indigo-400">${carro.marca}</p>
-                                <h3 class="text-xl font-bold text-white mt-0.5 truncate">${carro.modelo}</h3>
-                                <div class="flex gap-4 mt-2 text-xs text-slate-400">
-                                    <span><i class="fa-solid fa-gauge-simple-high mr-1 text-slate-500"></i>${formatarKm(carro.km)}</span>
+            <!-- CADASTRO VIEW -->
+            <section id="add-section" class="tab-content hidden">
+                <div class="form-card">
+                    <h2>Formulário de Cadastro de Veículo</h2>
+                    <form id="car-form">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Marca *</label><input type="text" id="car-brand" placeholder="Ex: Chevrolet" required></div>
+                            <div class="form-group"><label>Modelo *</label><input type="text" id="car-model" placeholder="Ex: Onix" required></div>
+                            <div class="form-group"><label>Ano Fabricação/Modelo *</label><input type="text" id="car-year" placeholder="Ex: 2024/2025" required></div>
+                            <div class="form-group"><label>Cor *</label><input type="text" id="car-color" placeholder="Ex: Preto" required></div>
+                            <div class="form-group"><label>Placa *</label><input type="text" id="car-plate" placeholder="Ex: ABC1D23" required></div>
+                            <div class="form-group"><label>KM *</label><input type="number" id="car-km" placeholder="Ex: 15000" required></div>
+                            <div class="form-group"><label>Preço de Custo (R$) *</label><input type="number" id="car-cost" step="0.01" required></div>
+                            <div class="form-group"><label>Preço de Venda (R$) *</label><input type="number" id="car-price" step="0.01" required></div>
+                            
+                            <!-- NOVO CAMPO: SELEÇÃO DE FOTO DO CARRO -->
+                            <div class="form-group full-width">
+                                <label>Foto do Veículo *</label>
+                                <div class="upload-container">
+                                    <input type="file" id="car-image" accept="image/*" required>
+                                    <div class="upload-box">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Clique para selecionar a foto do carro</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="flex items-center justify-between border-t border-slate-700/50 pt-4">
-                                <span class="text-2xl font-black text-emerald-400">${formatarMoeda(carro.preco)}</span>
-                                <a href="https://wa.me/557591235618?text=Olá! Tenho interesse no ${carro.marca} ${carro.modelo}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm">
-                                    <i class="fa-brands fa-whatsapp text-lg"></i> Contato
-                                </a>
+                                <div id="image-preview" class="image-preview-zone hidden"></div>
                             </div>
                         </div>
-                    </div>`;
-                grid.innerHTML += card;
-            });
-        }
+                        <div class="form-group full-width">
+                            <label>Observações / Opcionais</label>
+                            <textarea id="car-notes" rows="3" placeholder="Completo, teto solar, único dono..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-main max-w-200"><i class="fas fa-plus"></i> Salvar no Estoque</button>
+                    </form>
+                </div>
+            </section>
 
-        // Filtra os carros do catálogo em tempo real baseado no input de busca
-        function filtrarCatalogo() {
-            const termo = document.getElementById('busca-catalogo').value.toLowerCase();
-            const filtrados = estoque.filter(carro => 
-                carro.modelo.toLowerCase().includes(termo) || 
-                carro.marca.toLowerCase().includes(termo)
-            );
-            renderizarCatalogo(filtrados);
-        }
+            <!-- GERENCIADOR VIEW -->
+            <section id="stock-section" class="tab-content hidden">
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-stock" placeholder="Buscar no gerenciador...">
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr><th>Foto</th><th>Veículo</th><th>Ano</th><th>Placa</th><th>KM</th><th>Custo</th><th>Venda</th><th>Ações</th></tr>
+                        </thead>
+                        <tbody id="full-stock-table"></tbody>
+                    </table>
+                </div>
+            </section>
 
-        // Renderiza a lista/tabela de carros no Painel Admin
-        function renderizarTabelaAdmin() {
-            const tbody = document.getElementById('tabela-admin-corpo');
-            tbody.innerHTML = '';
+            <!-- RELATÓRIOS VIEW -->
+            <section id="report-section" class="tab-content hidden">
+                <div class="report-grid">
+                    <div class="report-card">
+                        <h3><i class="fas fa-calculator text-blue"></i> Lucro Líquido Estimado</h3>
+                        <div class="report-item"><span>Capital Investido:</span><strong id="rep-total-cost" class="text-white">R$ 0,00</strong></div>
+                        <div class="report-item"><span>Retorno de Vendas:</span><strong id="rep-total-sale" class="text-blue-light">R$ 0,00</strong></div>
+                        <hr class="divider">
+                        <div class="report-item total-profit"><span>Previsão de Lucro:</span><strong id="rep-total-profit" class="text-green">R$ 0,00</strong></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 
-            estoque.forEach(carro => {
-                const tr = `
-                    <tr class="hover:bg-slate-700/30 transition-colors">
-                        <td class="px-6 py-4 flex items-center gap-3">
-                            <img src="${carro.imagem}" class="w-12 h-12 object-cover rounded-md bg-slate-900 border border-slate-700" onerror="this.src='https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=120&q=80'">
-                            <div>
-                                <div class="font-bold text-white text-sm">${carro.modelo}</div>
-                                <div class="text-xs text-slate-400">${carro.marca}</div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm">
-                            <div class="text-slate-200">${carro.ano}</div>
-                            <div class="text-xs text-slate-400">${formatarKm(carro.km)}</div>
-                        </td>
-                        <td class="px-6 py-4 text-sm font-bold text-emerald-400">
-                            ${formatarMoeda(carro.preco)}
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <button onclick="deletarVeiculo(${carro.id})" class="text-rose-400 hover:text-rose-300 p-2 rounded-lg hover:bg-rose-500/10 transition-colors" title="Excluir item">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </td>
-                    </tr>`;
-                tbody.innerHTML += tr;
-            });
-        }
-
-        // Ação de Cadastrar / Salvar Novo Veículo
-        function salvarVeiculo(e) {
-            e.preventDefault();
-
-            const novoCarro = {
-                id: Date.now(), // Gera um ID único baseado no timestamp
-                modelo: document.getElementById('modelo').value,
-                marca: document.getElementById('marca').value,
-                ano: parseInt(document.getElementById('ano').value),
-                preco: parseFloat(document.getElementById('preco').value),
-                km: parseInt(document.getElementById('km').value),
-                imagem: document.getElementById('imagem').value
-            };
-
-            estoque.push(novoCarro);
-            atualizarDados();
-            
-            // Limpa o formulário e avisa o usuário
-            document.getElementById('form-veiculo').reset();
-            alert('Veículo adicionado com sucesso ao catálogo!');
-        }
-
-        // Ação de Deletar Veículo
-        function deletarVeiculo(id) {
-            if (confirm("Tem certeza que deseja remover este veículo do estoque?")) {
-                estoque = estoque.filter(carro => carro.id !== id);
-                atualizarDados();
-            }
-        }
-
-        // Executa ao carregar a página
-        atualizarDados();
-    </script>
+    <script src="js/app.js"></script>
 </body>
 </html>
